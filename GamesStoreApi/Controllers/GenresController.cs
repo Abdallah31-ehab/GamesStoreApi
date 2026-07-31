@@ -1,5 +1,7 @@
 ﻿using GamesStoreApi.Data;
+using GamesStoreApi.DTOs;
 using GamesStoreApi.Models;
+using GamesStoreApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,25 +14,69 @@ namespace GamesStoreApi.Controllers
     [ApiController]
     public class GenresController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        public GenresController(AppDbContext context)
+        private readonly IGenreService _service;
+         
+        public GenresController(IGenreService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllGenres()
         {
-            var genres = await _context.Genres.ToListAsync();
+            var genres = await _service.GetAllGenresAsync();
             return Ok(genres);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddGenre(Genre genre) 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetGenreById(int id) 
         {
-            await _context.Genres.AddAsync(genre);
-            await _context.SaveChangesAsync();
+            var genre = _service.GetGenreByIdAsync(id);
+
+            if (genre == null)
+            {
+                return NotFound();
+            }
+
             return Ok(genre);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateGenre(CreateGenreDto genreDto) 
+        {
+           var genre =  await _service.CreatGenreAsync(genreDto);
+
+            return CreatedAtAction(
+                nameof(GetGenreById),
+                new {id = genre.Id},
+                genre);
+
+            
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateGenre(int id,UpdateGenreDto updateGenreDto)
+        {
+            var genre = await _service.UpdateGenreAsync(id,updateGenreDto);
+
+            if (!genre)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGenre(int id)
+        {
+            var genre = await _service.DeleteGenreAsync(id);
+
+            if (!genre)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
+
 }

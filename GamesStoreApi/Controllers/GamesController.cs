@@ -56,8 +56,7 @@ namespace GamesStoreApi.Controllers
                 return NotFound();
             }
 
-            return NoContent();
-            
+            return NoContent();   
         }
        
         [HttpDelete("{id}")]

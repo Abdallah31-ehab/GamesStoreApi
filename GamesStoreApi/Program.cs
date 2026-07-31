@@ -10,7 +10,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
 
 //Dependecy Injection
 builder.Services.AddScoped<IGameService, GameService>();
-
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
 //Controllers + Swagger.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
