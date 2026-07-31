@@ -9,6 +9,7 @@ namespace GamesStoreApi.Services
     public class GameService : IGameService
     {
         private readonly AppDbContext _context;
+
         public GameService(AppDbContext context)
         {
             _context = context;
@@ -16,6 +17,7 @@ namespace GamesStoreApi.Services
 
         public async Task<Game> CreateGameAsync(CreateGameDto gameDto)
         {
+            
             var game = new Game
             {
                 Name = gameDto.Name,
@@ -31,37 +33,20 @@ namespace GamesStoreApi.Services
             return game;
         }
 
-        public async Task<bool> DeleteGameAsync(int id)
-        {
-            var existing = await _context.Games.FindAsync(id);
-            
-            if (existing is null)
-            {
-                return false;
-            }
-           
-            _context.Games.Remove(existing);
-            
-            await _context.SaveChangesAsync();
-            
-            return true;
-        }
-
-        public async Task<List<GameDto>> GetALLGamesAsync()
+        public async Task<List<GameDto>> GetAllGamesAsync()
         {
             return await _context.Games
-                .Include(g => g.Genre)
-                .Include(g => g.Publisher)
-                .Select(g => new GameDto
-                {
-                    Id = g.Id,
-                    Name = g.Name,
-                    Price = g.Price,
-                    Genre = g.Genre.Name,
-                    Publisher = g.Publisher.Name
-
-                })
-                .ToListAsync();
+                 .Include(g => g.Genre)
+                 .Include(g => g.Publisher)
+                 .Select(g => new GameDto
+                 {
+                     Id = g.Id,
+                     Name = g.Name,
+                     Price = g.Price,
+                     GenreName = g.Genre.Name,
+                     PublisherName = g.Publisher.Name
+                 })
+                  .ToListAsync();
         }
 
         public async Task<GameDto?> GetGameByIdAsync(int id)
@@ -69,17 +54,16 @@ namespace GamesStoreApi.Services
             return await _context.Games
                 .Include(g => g.Genre)
                 .Include(g => g.Publisher)
-                .Where(g => g.Id == id)
                 .Select(g => new GameDto
                 {
                     Id = g.Id,
                     Name = g.Name,
                     Price = g.Price,
-                    Genre = g.Genre.Name,
-                    Publisher = g.Publisher.Name
+                    GenreName = g.Genre.Name,
+                    PublisherName = g.Publisher.Name
 
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task<bool> UpdateGameAsync(int id, UpdateGameDto gameDto)
@@ -98,6 +82,22 @@ namespace GamesStoreApi.Services
            
             await _context.SaveChangesAsync();
            
+            return true;
+        }
+
+        public async Task<bool> DeleteGameAsync(int id)
+        {
+            var existing = await _context.Games.FindAsync(id);
+
+            if (existing is null)
+            {
+                return false;
+            }
+
+            _context.Games.Remove(existing);
+
+            await _context.SaveChangesAsync();
+
             return true;
         }
     }

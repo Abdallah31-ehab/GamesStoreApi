@@ -9,8 +9,8 @@
         public int GenreId { get; set; }
         public int PublisherId { get; set; }
 
-        public Genre? Genre { get; set; } = null!;
-        public Publisher? Publisher { get; set; } = null!;
+        public Genre Genre { get; set; } = null!;
+        public Publisher Publisher { get; set; } = null!;
 
     }
 }

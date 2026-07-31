@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-
-namespace GamesStoreApi.DTOs
+﻿namespace GamesStoreApi.DTOs
 {
     public class CreateGameDto
     {

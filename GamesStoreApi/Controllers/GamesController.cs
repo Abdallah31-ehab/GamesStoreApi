@@ -1,10 +1,4 @@
-﻿using GamesStoreApi.Data;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.Reflection.Metadata.Ecma335;
-using GamesStoreApi.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using GamesStoreApi.DTOs;
 using GamesStoreApi.Services;
 
@@ -15,36 +9,41 @@ namespace GamesStoreApi.Controllers
     public class GamesController : ControllerBase
     {
         private readonly IGameService _service;
+
         public GamesController(IGameService service)
         {
             _service = service;
         }
-       
-        [HttpGet]
-        public async Task<IActionResult> GetAllGames()
-        {
-            var games = await _service.GetALLGamesAsync ();
-            return Ok(games);
-        }
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGameById(int id)
         {
-          
+
             var game = await _service.GetGameByIdAsync(id);
-            if(game == null)
+            if (game == null)
             {
                 return NotFound();
             }
-            return Ok(game); 
+            return Ok(game);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllGames()
+        {
+            var games = await _service.GetAllGamesAsync();
+            return Ok(games);
+        }
+        
         [HttpPost]
         public async Task<IActionResult> AddGame(CreateGameDto gameDto)
         {
             var game = await _service.CreateGameAsync(gameDto);
-            return Ok(game);
-           
+            
+            return CreatedAtAction(
+                nameof(GetGameById),
+                new { id = game.Id },
+                game);
+
         }
         
         [HttpPut("{id}")]
@@ -57,7 +56,7 @@ namespace GamesStoreApi.Controllers
                 return NotFound();
             }
 
-            return Ok(result);
+            return NoContent();
             
         }
        
